@@ -1,0 +1,527 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist:wght@400;600;700;800&display=swap');
+@import "tailwindcss";
+
+/* ─── Shimmer Keyframe (KomaroviBanner fallback) ───────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ─── Light Theme Tokens (default) ─────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --color-bg:          #f7f9fb;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1f5f9;
+  --color-text:        #0f172a;
+  --color-muted:       #64748b;
+  --color-border:      #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-primary:     #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-accent:      #10b981;
+  --color-card:        #ffffff;
+  --color-card-hover:  #f8fafc;
+  --color-shadow:      rgba(0, 0, 0, 0.06);
+  --color-overlay:     rgba(255, 255, 255, 0.85);
+
+  color-scheme: light;
+}
+
+/* ─── Dark Theme Tokens ─────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-bg:          #09090b;
+  --color-surface:     #111113;
+  --color-surface-2:   #1c1c1f;
+  --color-text:        #fafafa;
+  --color-muted:       #71717a;
+  --color-border:      #27272a;
+  --color-border-subtle: #18181b;
+  --color-primary:     #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-accent:      #34d399;
+  --color-card:        #111113;
+  --color-card-hover:  #18181b;
+  --color-shadow:      rgba(0, 0, 0, 0.4);
+  --color-overlay:     rgba(9, 9, 11, 0.85);
+
+  color-scheme: dark;
+}
+
+/* ─── Global Base ───────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  transition: color-scheme 0.15s ease;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ─── Theme Transition Helper ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Disable transition flicker on interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
+  transition-duration: 0.15s;
+}
+
+/* ─── Dark-mode Tailwind Overrides via data-theme ───────────────────────────── */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-\[white\] {
+  background-color: var(--color-surface) !important;
+}
+[data-theme="dark"] .bg-\[#f7f9fb\],
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-50\/70,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-slate-100\/80 {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-slate-800,
+[data-theme="dark"] .text-slate-700 {
+  color: var(--color-text) !important;
+}
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-slate-300 {
+  color: var(--color-muted) !important;
+}
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-200\/80,
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-slate-300 {
+  border-color: var(--color-border) !important;
+}
+[data-theme="dark"] .hover\:bg-slate-100:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--color-muted);
+}
+
+
+
+
+/* ─── Shimmer Keyframe (KomaroviBanner fallback) ───────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ─── Light Theme Tokens (default) ─────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --color-bg:          #f7f9fb;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1f5f9;
+  --color-text:        #0f172a;
+  --color-muted:       #64748b;
+  --color-border:      #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-primary:     #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-accent:      #10b981;
+  --color-card:        #ffffff;
+  --color-card-hover:  #f8fafc;
+  --color-shadow:      rgba(0, 0, 0, 0.06);
+  --color-overlay:     rgba(255, 255, 255, 0.85);
+
+  color-scheme: light;
+}
+
+/* ─── Dark Theme Tokens ─────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-bg:          #09090b;
+  --color-surface:     #111113;
+  --color-surface-2:   #1c1c1f;
+  --color-text:        #fafafa;
+  --color-muted:       #71717a;
+  --color-border:      #27272a;
+  --color-border-subtle: #18181b;
+  --color-primary:     #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-accent:      #34d399;
+  --color-card:        #111113;
+  --color-card-hover:  #18181b;
+  --color-shadow:      rgba(0, 0, 0, 0.4);
+  --color-overlay:     rgba(9, 9, 11, 0.85);
+
+  color-scheme: dark;
+}
+
+/* ─── Global Base ───────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  transition: color-scheme 0.15s ease;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ─── Theme Transition Helper ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Disable transition flicker on interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
+  transition-duration: 0.15s;
+}
+
+/* ─── Dark-mode Tailwind Overrides via data-theme ───────────────────────────── */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-\[white\] {
+  background-color: var(--color-surface) !important;
+}
+[data-theme="dark"] .bg-\[#f7f9fb\],
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-50\/70,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-slate-100\/80 {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-slate-800,
+[data-theme="dark"] .text-slate-700 {
+  color: var(--color-text) !important;
+}
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-slate-300 {
+  color: var(--color-muted) !important;
+}
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-200\/80,
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-slate-300 {
+  border-color: var(--color-border) !important;
+}
+[data-theme="dark"] .hover\:bg-slate-100:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--color-muted);
+}
+
+
+
+
+/* ─── Shimmer Keyframe (KomaroviBanner fallback) ───────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ─── Light Theme Tokens (default) ─────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --color-bg:          #f7f9fb;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1f5f9;
+  --color-text:        #0f172a;
+  --color-muted:       #64748b;
+  --color-border:      #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-primary:     #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-accent:      #10b981;
+  --color-card:        #ffffff;
+  --color-card-hover:  #f8fafc;
+  --color-shadow:      rgba(0, 0, 0, 0.06);
+  --color-overlay:     rgba(255, 255, 255, 0.85);
+
+  color-scheme: light;
+}
+
+/* ─── Dark Theme Tokens ─────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-bg:          #09090b;
+  --color-surface:     #111113;
+  --color-surface-2:   #1c1c1f;
+  --color-text:        #fafafa;
+  --color-muted:       #71717a;
+  --color-border:      #27272a;
+  --color-border-subtle: #18181b;
+  --color-primary:     #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-accent:      #34d399;
+  --color-card:        #111113;
+  --color-card-hover:  #18181b;
+  --color-shadow:      rgba(0, 0, 0, 0.4);
+  --color-overlay:     rgba(9, 9, 11, 0.85);
+
+  color-scheme: dark;
+}
+
+/* ─── Global Base ───────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  transition: color-scheme 0.15s ease;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ─── Theme Transition Helper ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Disable transition flicker on interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
+  transition-duration: 0.15s;
+}
+
+/* ─── Dark-mode Tailwind Overrides via data-theme ───────────────────────────── */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-\[white\] {
+  background-color: var(--color-surface) !important;
+}
+[data-theme="dark"] .bg-\[#f7f9fb\],
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-50\/70,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-slate-100\/80 {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-slate-800,
+[data-theme="dark"] .text-slate-700 {
+  color: var(--color-text) !important;
+}
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-slate-300 {
+  color: var(--color-muted) !important;
+}
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-200\/80,
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-slate-300 {
+  border-color: var(--color-border) !important;
+}
+[data-theme="dark"] .hover\:bg-slate-100:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--color-muted);
+}
+
+
+
+
+/* ─── Shimmer Keyframe (KomaroviBanner fallback) ───────────────────────────── */
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* ─── Light Theme Tokens (default) ─────────────────────────────────────────── */
+:root,
+[data-theme="light"] {
+  --color-bg:          #f7f9fb;
+  --color-surface:     #ffffff;
+  --color-surface-2:   #f1f5f9;
+  --color-text:        #0f172a;
+  --color-muted:       #64748b;
+  --color-border:      #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-primary:     #4f46e5;
+  --color-primary-hover: #4338ca;
+  --color-accent:      #10b981;
+  --color-card:        #ffffff;
+  --color-card-hover:  #f8fafc;
+  --color-shadow:      rgba(0, 0, 0, 0.06);
+  --color-overlay:     rgba(255, 255, 255, 0.85);
+
+  color-scheme: light;
+}
+
+/* ─── Dark Theme Tokens ─────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-bg:          #09090b;
+  --color-surface:     #111113;
+  --color-surface-2:   #1c1c1f;
+  --color-text:        #fafafa;
+  --color-muted:       #71717a;
+  --color-border:      #27272a;
+  --color-border-subtle: #18181b;
+  --color-primary:     #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-accent:      #34d399;
+  --color-card:        #111113;
+  --color-card-hover:  #18181b;
+  --color-shadow:      rgba(0, 0, 0, 0.4);
+  --color-overlay:     rgba(9, 9, 11, 0.85);
+
+  color-scheme: dark;
+}
+
+/* ─── Global Base ───────────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  transition: color-scheme 0.15s ease;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ─── Theme Transition Helper ───────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* Disable transition flicker on interactive elements */
+button,
+a,
+input,
+select,
+textarea {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, transform;
+  transition-duration: 0.15s;
+}
+
+/* ─── Dark-mode Tailwind Overrides via data-theme ───────────────────────────── */
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-\[white\] {
+  background-color: var(--color-surface) !important;
+}
+[data-theme="dark"] .bg-\[#f7f9fb\],
+[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-slate-50\/70,
+[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-slate-100\/80 {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-slate-800,
+[data-theme="dark"] .text-slate-700 {
+  color: var(--color-text) !important;
+}
+[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-slate-300 {
+  color: var(--color-muted) !important;
+}
+[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-200\/80,
+[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-slate-300 {
+  border-color: var(--color-border) !important;
+}
+[data-theme="dark"] .hover\:bg-slate-100:hover,
+[data-theme="dark"] .hover\:bg-slate-50:hover {
+  background-color: var(--color-surface-2) !important;
+}
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: var(--color-surface-2);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--color-muted);
+}

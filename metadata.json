@@ -1,0 +1,6 @@
+{
+  "name": "Mentora",
+  "description": "Premier academic tutoring platform connecting high-achieving students with world-class mentors, featuring AI matching, real-time availability, interactive booking, and transparent pay-per-session pricing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
