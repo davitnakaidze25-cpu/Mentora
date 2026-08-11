@@ -27,8 +27,8 @@ const tutorRegisterSchema = z.object({
   email: z
     .string()
     .email('A valid email is required.')
-    .refine((v) => v.toLowerCase().endsWith('@komarovi.edu.ge'), {
-      message: 'Tutors must register with a @komarovi.edu.ge email address.',
+    .refine((v) => v.toLowerCase().endsWith('@students.gov.ge'), {
+      message: 'Tutors must use a valid @students.gov.ge email address.',
     }),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
@@ -184,7 +184,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess, initia
             <div className="mb-5 flex items-start gap-2.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl p-3.5">
               <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
               <p className="text-xs text-emerald-800 dark:text-emerald-300 font-medium leading-relaxed">
-                Tutors must register with a @komarovi.edu.ge email address.
+                Tutors must register with a <strong>@students.gov.ge</strong> email address.
               </p>
             </div>
           )}
@@ -242,7 +242,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ onClose, onSuccess, initia
                 <input
                   {...register('email')}
                   type="email"
-                  placeholder={activeTab === 'tutor' && mode === 'register' ? 'yourname@komarovi.edu.ge' : 'you@example.com'}
+                  placeholder={activeTab === 'tutor' && mode === 'register' ? 'yourname@students.gov.ge' : 'you@example.com'}
                   className="w-full pl-10 pr-4 py-3 rounded-xl border text-sm bg-[var(--color-bg)] text-[var(--color-text)] border-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all"
                 />
               </div>

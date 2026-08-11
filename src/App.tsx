@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/common/Navbar';
 import { Messenger } from './components/chat/Messenger';
@@ -18,7 +18,6 @@ import { TutorCard } from './components/tutor/TutorCard';
 import { AuthModal } from './components/auth/AuthModal';
 import { useAuth } from './context/AuthContext';
 import { getTutorProfileByUserId, updateTutorProfile } from './services/profileService';
-import { MOCK_TUTORS, INITIAL_SUBJECTS, MOCK_BOOKINGS } from './data/mockData';
 import { Tutor, Subject, Booking, FilterOptions, AvailabilitySlot } from './types';
 import { TutorProfilePage } from './pages/TutorProfilePage';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
@@ -29,9 +28,9 @@ export default function App() {
   const location = useLocation();
 
   const [messengerOtherUserId, setMessengerOtherUserId] = useState<string | null>(null);
-  const [tutors, setTutors] = useState<Tutor[]>(MOCK_TUTORS);
-  const [subjects, setSubjects] = useState<Subject[]>(INITIAL_SUBJECTS);
-  const [bookings, setBookings] = useState<Booking[]>(MOCK_BOOKINGS);
+  const [tutors, setTutors] = useState<Tutor[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   const [selectedTutorForProfile, setSelectedTutorForProfile] = useState<Tutor | null>(null);

@@ -122,19 +122,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = useCallback(async (payload: RegisterPayload): Promise<AuthUser> => {
     setIsLoading(true);
     try {
-      if (payload.role === 'TUTOR' && !payload.email.toLowerCase().endsWith('@komarovi.edu.ge')) {
-        throw new Error('Signups are restricted to official Komarovi school email addresses (@komarovi.edu.ge).');
+      // ── 1. Client-side email domain guard for Tutors ──
+      if (payload.role === 'TUTOR' && !payload.email.toLowerCase().endsWith('@students.gov.ge')) {
+        throw new Error('Tutors must use a valid @students.gov.ge email address.');
       }
 
-      const { data: authData, error: authError } = await supabase.auth.signUp({ 
-        email: payload.email, 
-        password: payload.password 
+      // ── 2. Create the Supabase Auth user, passing metadata so DB triggers can use it ──
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: payload.email,
+        password: payload.password,
+        options: {
+          data: {
+            full_name: payload.fullName,
+            role: payload.role,
+            grade: payload.grade ?? null,
+          },
+        },
       });
 
-      if (authError) throw new Error(authError.message);
-      if (!authData.user) throw new Error('Registration failed');
+      if (authError) {
+        console.error('[Mentora] Supabase signUp error:', authError);
+        throw new Error(authError.message);
+      }
+      if (!authData.user) {
+        throw new Error('Registration failed: Supabase did not return a user object.');
+      }
 
-      // Create User Profile
+      // ── 3. Insert into the custom User table (only after auth succeeds) ──
+      // NOTE: If this fails with an RLS error, set up a Postgres Database Trigger on
+      // auth.users instead so the row is created server-side with elevated privileges.
       const { data: userInsert, error: userError } = await supabase
         .from('User')
         .insert({
@@ -148,9 +164,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .select()
         .single();
 
-      if (userError) throw new Error(userError.message);
+      if (userError) {
+        console.error('[Mentora] User table insert error:', userError);
+        throw new Error(`Profile creation failed: ${userError.message}`);
+      }
 
-      // Create Tutor Profile if applicable
+      // ── 4. Create TutorProfile row if role is TUTOR ──
       if (payload.role === 'TUTOR') {
         const { error: tutorError } = await supabase
           .from('TutorProfile')
@@ -163,13 +182,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             degree: 'Undergraduate',
             graduationYear: new Date().getFullYear() + 4,
           });
-        
-        if (tutorError) throw new Error(tutorError.message);
+
+        if (tutorError) {
+          console.error('[Mentora] TutorProfile insert error:', tutorError);
+          throw new Error(`Tutor profile creation failed: ${tutorError.message}`);
+        }
       }
 
       const newUser = userInsert as AuthUser;
       setCurrentUser(newUser);
       return newUser;
+    } catch (err: any) {
+      // Re-throw so callers (AuthModal) can display the message in the UI
+      console.error('[Mentora] register() exception:', err);
+      throw err;
     } finally {
       setIsLoading(false);
     }

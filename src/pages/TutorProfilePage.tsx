@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TutorProfileModal } from '../components/tutor/TutorProfileModal';
 import { Tutor, AvailabilitySlot } from '../types';
 import { getTutorById } from '../services/profileService';
-import { MOCK_TUTORS } from '../data/mockData';
 
 interface TutorProfilePageProps {
   tutors: Tutor[];
@@ -18,8 +17,8 @@ export const TutorProfilePage: React.FC<TutorProfilePageProps> = ({ tutors, onBo
   useEffect(() => {
     if (!id) return;
     
-    // First try local mock data or pre-loaded state
-    const localTutor = tutors.find(t => t.id === id) || MOCK_TUTORS.find(t => t.id === id);
+    // First try the pre-loaded tutors from App state
+    const localTutor = tutors.find(t => t.id === id);
     if (localTutor) {
       setTutor(localTutor as any);
       return;
