@@ -87,11 +87,8 @@ export default function App() {
   useEffect(() => {
     async function loadData() {
       try {
-        const tutorsRes = await fetch('/api/tutors');
-        if (tutorsRes.ok) {
-          const tData = await tutorsRes.json();
-          if (tData.data) setTutors(tData.data);
-        }
+        const tutorList = await getTutors();
+        if (tutorList.length > 0) setTutors(tutorList);
 
         const subRes = await fetch('/api/subjects');
         if (subRes.ok) {
@@ -99,11 +96,12 @@ export default function App() {
           if (sData.data) setSubjects(sData.data);
         }
       } catch (err) {
-        console.warn('API error, using fallback mock data', err);
+        console.warn('Load error:', err);
       }
     }
     loadData();
   }, []);
+
 
   useEffect(() => {
     loadBookings();
