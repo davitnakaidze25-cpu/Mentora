@@ -149,17 +149,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // ── 3. Insert into the custom User table (only after auth succeeds) ──
-      // NOTE: If this fails with an RLS error, set up a Postgres Database Trigger on
-      // auth.users instead so the row is created server-side with elevated privileges.
+      // Use upsert to handle conflicts gracefully if the database trigger already inserted the user profile.
       const { data: userInsert, error: userError } = await supabase
         .from('User')
-        .insert({
+        .upsert({
           id: authData.user.id,
           email: payload.email,
           passwordHash: 'managed-by-supabase-auth',
           fullName: payload.fullName,
           role: payload.role,
           grade: payload.grade || null,
+        }, {
+          onConflict: 'id'
         })
         .select()
         .single();
@@ -173,7 +174,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (payload.role === 'TUTOR') {
         const { error: tutorError } = await supabase
           .from('TutorProfile')
-          .insert({
+          .upsert({
             userId: authData.user.id,
             headline: 'Mentora Academic Tutor',
             bio: 'I am a new tutor on Mentora.',
@@ -181,6 +182,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             institution: 'Komarovi Campus',
             degree: 'Undergraduate',
             graduationYear: new Date().getFullYear() + 4,
+          }, {
+            onConflict: 'userId'
           });
 
         if (tutorError) {
