@@ -149,24 +149,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // ── 3. Insert into the custom User table (only after auth succeeds) ──
-      // Use upsert to handle conflicts gracefully if the database trigger already inserted the user profile.
-      const { data: userInsert, error: userError } = await supabase
-        .from('User')
-        .upsert({
-          id: authData.user.id,
-          email: payload.email,
-          passwordHash: 'managed-by-supabase-auth',
-          fullName: payload.fullName,
-          role: payload.role,
-          grade: payload.grade || null,
-        }, {
-          onConflict: 'id'
-        })
-        .select()
-        .single();
+      // Use upsert/fallback select to handle conflicts gracefully if the database trigger already inserted the user profile.
+      let userInsert: any = null;
+      let userError: any = null;
+      try {
+        const res = await supabase
+          .from('User')
+          .upsert({
+            id: authData.user.id,
+            email: payload.email,
+            passwordHash: 'managed-by-supabase-auth',
+            fullName: payload.fullName,
+            role: payload.role,
+            grade: payload.grade || null,
+          }, {
+            onConflict: 'id'
+          })
+          .select()
+          .single();
+        userInsert = res.data;
+        userError = res.error;
+      } catch (err) {
+        console.warn('[Mentora] Custom User upsert exception, attempting select fallback:', err);
+      }
+
+      // If upsert failed, attempt to fetch the pre-created profile row (e.g. from trigger)
+      if (!userInsert) {
+        const { data, error } = await supabase
+          .from('User')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
+        
+        if (data) {
+          userInsert = data;
+          userError = null;
+        } else {
+          userError = error || new Error('Failed to retrieve or create user profile.');
+        }
+      }
 
       if (userError) {
-        console.error('[Mentora] User table insert error:', userError);
+        console.error('[Mentora] User profile retrieval/creation failed:', userError);
         throw new Error(`Profile creation failed: ${userError.message}`);
       }
 
