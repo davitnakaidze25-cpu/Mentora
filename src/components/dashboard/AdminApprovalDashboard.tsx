@@ -4,6 +4,7 @@ import {
   BookOpen, Star, ToggleLeft, ToggleRight, Search, ChevronDown, AlertTriangle,
   UserCog, Calendar, Filter, Crown, GraduationCap, UserCheck, Loader2, X
 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -166,52 +167,68 @@ export const AdminApprovalDashboard: React.FC<AdminApprovalDashboardProps> = ({ 
   const loadTutors = useCallback(async () => {
     setTutorLoading(true);
     try {
-      const status = tutorFilter === 'All' ? '' : tutorFilter;
-      const res = await fetch(`/api/tutors?status=${status}`);
-      const data = await res.json();
-      if (data.success) {
-        setTutors(
-          (data.data as any[]).map((t) => ({
-            id: t.id,
-            fullName: t.fullName,
-            email: t.email ?? '',
-            institution: t.institution,
-            verificationStatus: t.verificationStatus ?? 'PENDING',
-            featured: t.featured ?? false,
-            rating: t.rating ?? 0,
-            hourlyRate: t.hourlyRate ?? 0,
-            createdAt: t.createdAt,
-          }))
-        );
+      let query = supabase
+        .from('TutorProfile')
+        .select('id, verificationStatus, featured, rating, hourlyRate, institution, createdAt, userId, user:userId(fullName, email)');
+
+      if (tutorFilter !== 'All') {
+        query = query.eq('verificationStatus', tutorFilter);
       }
-    } catch { /* silent */ }
-    finally { setTutorLoading(false); }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      setTutors(
+        (data as any[]).map((t) => ({
+          id: t.id,
+          fullName: t.user?.fullName ?? 'Unknown',
+          email: t.user?.email ?? '',
+          institution: t.institution ?? '',
+          verificationStatus: t.verificationStatus ?? 'PENDING',
+          featured: t.featured ?? false,
+          rating: t.rating ?? 0,
+          hourlyRate: t.hourlyRate ?? 0,
+          createdAt: t.createdAt,
+        }))
+      );
+    } catch (e) {
+      console.error('[Admin] loadTutors error:', e);
+    } finally {
+      setTutorLoading(false);
+    }
   }, [tutorFilter]);
 
   const handleTutorDecision = async (id: string, status: 'VERIFIED' | 'REJECTED') => {
     setTutorProcessing(id);
     try {
-      await fetch(`/api/tutors/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ verificationStatus: status }),
-      });
+      const { error } = await supabase
+        .from('TutorProfile')
+        .update({ verificationStatus: status })
+        .eq('id', id);
+      if (error) throw error;
       setTutors((prev) => prev.map((t) => (t.id === id ? { ...t, verificationStatus: status } : t)));
-      // Immediately sync parent app state so student view updates without reload
       onTutorStatusChange?.(id, status);
-    } finally { setTutorProcessing(null); }
+    } catch (e) {
+      console.error('[Admin] handleTutorDecision error:', e);
+    } finally {
+      setTutorProcessing(null);
+    }
   };
 
   const handleToggleFeatured = async (id: string, featured: boolean) => {
     setTutorProcessing(id);
     try {
-      await fetch(`/api/admin/tutors/${id}/featured`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ featured: !featured }),
-      });
+      const { error } = await supabase
+        .from('TutorProfile')
+        .update({ featured: !featured })
+        .eq('id', id);
+      if (error) throw error;
       setTutors((prev) => prev.map((t) => (t.id === id ? { ...t, featured: !featured } : t)));
-    } finally { setTutorProcessing(null); }
+    } catch (e) {
+      console.error('[Admin] handleToggleFeatured error:', e);
+    } finally {
+      setTutorProcessing(null);
+    }
   };
 
   const handleDeleteTutor = (id: string) => {
@@ -235,14 +252,35 @@ export const AdminApprovalDashboard: React.FC<AdminApprovalDashboardProps> = ({ 
   const loadUsers = useCallback(async () => {
     setUserLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (roleFilter !== 'All') params.set('role', roleFilter);
-      if (userSearch.trim()) params.set('search', userSearch.trim());
-      const res = await fetch(`/api/admin/users?${params}`);
-      const data = await res.json();
-      if (data.success) setUsers(data.data);
-    } catch { /* silent */ }
-    finally { setUserLoading(false); }
+      let query = supabase
+        .from('User')
+        .select('id, fullName, email, role, avatarUrl, createdAt, grade, tutorProfile:TutorProfile(id, verificationStatus, featured, rating, hourlyRate)');
+
+      if (roleFilter !== 'All') query = query.eq('role', roleFilter);
+      if (userSearch.trim()) {
+        query = query.or(`fullName.ilike.%${userSearch.trim()}%,email.ilike.%${userSearch.trim()}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+
+      setUsers(
+        (data as any[]).map((u) => ({
+          id: u.id,
+          fullName: u.fullName,
+          email: u.email,
+          role: u.role,
+          avatarUrl: u.avatarUrl,
+          createdAt: u.createdAt,
+          grade: u.grade,
+          tutorProfile: Array.isArray(u.tutorProfile) ? u.tutorProfile[0] ?? null : u.tutorProfile ?? null,
+        }))
+      );
+    } catch (e) {
+      console.error('[Admin] loadUsers error:', e);
+    } finally {
+      setUserLoading(false);
+    }
   }, [roleFilter, userSearch]);
 
   const handleDeleteUser = (user: AdminUser) => {
